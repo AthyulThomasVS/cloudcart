@@ -26,7 +26,7 @@ def get_db_connection():
     )
     return conn
 
-@app.route("/products")
+@app.route("/api/products")
 def products():
 
     conn = get_db_connection()

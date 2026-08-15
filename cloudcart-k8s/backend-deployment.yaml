@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cloudcart-backend
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: cloudcart-backend
+
+  template:
+    metadata:
+      labels:
+        app: cloudcart-backend
+
+    spec:
+      containers:
+        - name: backend
+          image: cloudcartacr001.azurecr.io/backend:v2
+
+          ports:
+            - containerPort: 5000
+
+          env:
+
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: cloudcart-db-secret
+                  key: DB_HOST
+                  
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudcart-db-secret
+                  key: DB_USER
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudcart-db-secret
+                  key: DB_PASSWORD
+
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: cloudcart-db-secret
+                  key: DB_NAME

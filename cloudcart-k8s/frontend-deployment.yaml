@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cloudcart-frontend
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: cloudcart-frontend
+
+  template:
+    metadata:
+      labels:
+        app: cloudcart-frontend
+
+    spec:
+      containers:
+      - name: frontend
+
+        image: cloudcartacr001.azurecr.io/frontend:v3
+
+        ports:
+        - containerPort: 3000

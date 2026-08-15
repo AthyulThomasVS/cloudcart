@@ -1,4 +1,4 @@
-name: CloudCart CI
+name: CloudCart CI/CD
 
 on:
   push:
@@ -7,32 +7,60 @@ on:
 
 jobs:
 
-  build:
+  build-and-deploy:
 
     runs-on: ubuntu-latest
 
     steps:
 
+      # 1. Download repository code
       - name: Checkout code
         uses: actions/checkout@v4
 
 
+      # 2. Login to Azure using Service Principal
       - name: Login to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
 
-      - name: Login to Azure Container Registry
+      # 3. Login to Azure Container Registry
+      - name: Login to ACR
         run: |
           az acr login --name cloudcartacr001
 
 
-      - name: Build Backend Docker Image
+      # 4. Build Backend Docker Image
+      - name: Build Docker Image
         run: |
-          docker build -t cloudcartacr001.azurecr.io/backend:${{ github.sha }} ./backend
+          docker build \
+          -t cloudcartacr001.azurecr.io/backend:${{ github.sha }} \
+          ./backend
 
 
+      # 5. Push Image to ACR
       - name: Push Image to ACR
         run: |
           docker push cloudcartacr001.azurecr.io/backend:${{ github.sha }}
+
+
+      # 6. Connect GitHub Actions to AKS
+      - name: Get AKS credentials
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: rg-aks-lab
+          cluster-name: cloudcart-aks
+
+
+      # 7. Deploy new image to AKS
+      - name: Deploy to AKS
+        run: |
+          kubectl set image deployment/cloudcart-backend \
+          backend=cloudcartacr001.azurecr.io/backend:${{ github.sha }}
+
+
+      # 8. Check rollout status
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/cloudcart-backend

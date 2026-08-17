@@ -1,3 +1,4 @@
+# Frontend CI/CD enabled
 name: CloudCart CI/CD
 
 on:

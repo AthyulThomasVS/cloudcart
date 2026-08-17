@@ -77,7 +77,7 @@ function App() {
         <div className="hero-content">
 
           <div className="hero-badge">
-            ✨ WELCOME TO CLOUDCART - AKS CI/CD DEMO
+            ✨ WELCOME TO CLOUDCART - AKS CI/CD DEMO Complete
           </div>
 
           <h1>

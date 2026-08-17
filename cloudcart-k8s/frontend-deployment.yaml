@@ -20,7 +20,8 @@ spec:
       containers:
       - name: frontend
 
-        image: cloudcartacr001.azurecr.io/frontend:v3
+        image: cloudcartacr001.azurecr.io/frontend:v5
+        imagePullPolicy: Always
 
         ports:
         - containerPort: 3000

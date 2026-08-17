@@ -7,7 +7,7 @@ function App() {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    fetch("http://135.235.244.205:5000/products")
+    fetch("/api/products")
       .then((response) => response.json())
       .then((data) => setProducts(data))
       .catch((error) => console.log(error));
@@ -77,7 +77,7 @@ function App() {
         <div className="hero-content">
 
           <div className="hero-badge">
-            ✨ WELCOME TO CLOUDCART
+            ✨ WELCOME TO CLOUDCART - AKS CI/CD DEMO
           </div>
 
           <h1>

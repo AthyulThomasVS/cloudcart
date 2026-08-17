@@ -13,7 +13,7 @@ jobs:
 
     steps:
 
-      # 1. Download repository code
+      # 1. Checkout repository code
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -32,20 +32,36 @@ jobs:
 
 
       # 4. Build Backend Docker Image
-      - name: Build Docker Image
+      - name: Build Backend Docker Image
         run: |
           docker build \
           -t cloudcartacr001.azurecr.io/backend:${{ github.sha }} \
           ./backend
 
 
-      # 5. Push Image to ACR
-      - name: Push Image to ACR
+      # 5. Push Backend Image to ACR
+      - name: Push Backend Image to ACR
         run: |
-          docker push cloudcartacr001.azurecr.io/backend:${{ github.sha }}
+          docker push \
+          cloudcartacr001.azurecr.io/backend:${{ github.sha }}
 
 
-      # 6. Connect GitHub Actions to AKS
+      # 6. Build Frontend Docker Image
+      - name: Build Frontend Docker Image
+        run: |
+          docker build \
+          -t cloudcartacr001.azurecr.io/frontend:${{ github.sha }} \
+          ./frontend
+
+
+      # 7. Push Frontend Image to ACR
+      - name: Push Frontend Image to ACR
+        run: |
+          docker push \
+          cloudcartacr001.azurecr.io/frontend:${{ github.sha }}
+
+
+      # 8. Connect GitHub Actions to AKS
       - name: Get AKS credentials
         uses: azure/aks-set-context@v4
         with:
@@ -53,14 +69,27 @@ jobs:
           cluster-name: cloudcart-aks
 
 
-      # 7. Deploy new image to AKS
-      - name: Deploy to AKS
+      # 9. Deploy Backend Image to AKS
+      - name: Deploy Backend to AKS
         run: |
           kubectl set image deployment/cloudcart-backend \
           backend=cloudcartacr001.azurecr.io/backend:${{ github.sha }}
 
 
-      # 8. Check rollout status
-      - name: Verify Deployment
+      # 10. Deploy Frontend Image to AKS
+      - name: Deploy Frontend to AKS
+        run: |
+          kubectl set image deployment/cloudcart-frontend \
+          frontend=cloudcartacr001.azurecr.io/frontend:${{ github.sha }}
+
+
+      # 11. Verify Backend Rollout
+      - name: Verify Backend Deployment
         run: |
           kubectl rollout status deployment/cloudcart-backend
+
+
+      # 12. Verify Frontend Rollout
+      - name: Verify Frontend Deployment
+        run: |
+          kubectl rollout status deployment/cloudcart-frontend
